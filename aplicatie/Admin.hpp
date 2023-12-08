@@ -2,23 +2,22 @@
 #include "./Trip.hpp"
 
 
-
 class Admin : public AdminOrUser {
 public:
-    // constructor
+    // Constructor
     Admin(std::string username, std::string password) : AdminOrUser(username, password) {}
 
     
-    // function adds a new trip into the .csv and updates trips vector
+    // Function adds a new trip into the .csv and updates trips vector
     void addTrip(std::vector<Trip>& trips) {
         try {
 
-            // details regarding the trip to be added
+            // Details regarding the trip to be added
             std::string to, from, date, handle;
             float price;
 
 
-            // prompt the user to enter each field for the trip that is to be added
+            // Prompt the user to enter each field for the trip that is to be added
             std::cout << "\n-----------------------\n";
             std::cout << "Enter trip details to add:\n";
             std::cout << "From: ";
@@ -31,28 +30,28 @@ public:
             std::cin >> price;
 
 
-            // capitalize to and from and make every other letter lowercase
+            // Capitalize to and from and make every other letter lowercase
             // to find match the format of the cities stored in the .csv
             to = capitalizeString(to);
             from = capitalizeString(from);
 
 
-            // create a new trip with the given details
+            // Create a new trip with the given details
             Trip trip(from, to, date, price);
 
 
-            // check if the date is in the right format and throw an error 
+            // Check if the date is in the right format and throw an error 
             if (date.size() != 10 || date[2] != '.' || date[5] != '.') {
                 throw std::invalid_argument("Invalid date format. Please enter in dd.mm.yyyy format.");
             }
 
-            // also check if the date is not in the past and throw an error
+            // Also check if the date is not in the past and throw an error
             if (!isDateNotInPast(date)) {
                 throw std::runtime_error("Date is in the past.");
             }
 
 
-            // check if the trip already exists, if it does throw an error
+            // Check if the trip already exists, if it does throw an error
             for (int i = 0; i < trips.size(); i++) {
                 Trip trip = trips[i];
                 if (trip.getDepartureLocation() == from && trip.getDestinationLocation() == to && trip.getDate() == date) {
@@ -61,7 +60,7 @@ public:
             }
 
 
-            // open .csv that stores the trips in append mode
+            // Open .csv that stores the trips in append mode
             std::ofstream file("./storage/trips.csv", std::ios::app);
             // throw an error id the file was unable to be opened
             if (!file.is_open()) {
@@ -69,13 +68,13 @@ public:
             }
 
 
-            // write the new trip details into the .csv and update the trips vector
+            // Write the new trip details into the .csv and update the trips vector
             file << from << "," << to << "," << trip.getHandle() << "," << date << "," << price << "\n";
             trips.push_back(trip);
             file.close();
 
 
-            // confirmation that the add operation was succesful
+            // Confirmation that the add operation was succesful
             std::cout << "Trip added successfully.\n";
 
         } catch (const std::exception& e) {
@@ -88,15 +87,15 @@ public:
 
 
 
-    // function to delete a given trip from the .csv and the trips vector
+    // Function to delete a given trip from the .csv and the trips vector
     void deleteTrip(std::vector<Trip>& trips) {
         try {
 
-            // inputs that determine which trip is to be deleted
+            // Inputs that determine which trip is to be deleted
             std::string to, from, date;
 
 
-            // prompt the user to enter each field for the trip that is to be removed 
+            // Prompt the user to enter each field for the trip that is to be removed 
             std::cout << "\n-----------------------\n";
             std::cout << "Enter trip details to remove:\n";
             std::cout << "From: ";
@@ -107,12 +106,12 @@ public:
             std::cin >> date;
 
 
-
+            // Capitalize to and from to match their quivalents in the .csv
             to = capitalizeString(to);
             from = capitalizeString(from);
-
             
 
+            // Throw an error it the date is in the past
             if (date.size() != 10 || date[2] != '.' || date[5] != '.') {
                 throw std::invalid_argument("Invalid date format. Please enter in dd.mm.yyyy format.");
             }
@@ -129,6 +128,7 @@ public:
             }
 
 
+            // No trip was found that matched the input
             if (it == trips.end()) {
                 throw std::runtime_error("Trip not found.");
             }
@@ -137,24 +137,28 @@ public:
             // Erase trip from the vector
             trips.erase(it);
 
-            // Write updated vector to the CSV file
+
+            // Throw an error if the file as unable to be oppened
             std::ofstream file("./storage/trips.csv");
             if (!file.is_open()) {
                 throw std::runtime_error("Unable to open file.");
             }
 
 
-            // print the top row again with the 
+            // Print the top row again with the meanings of each column
             file << "Departure,Destination,Handle,Date,Price\n";
 
 
+            // Print every trip again in the .csv 
             for (int i = 0; i < trips.size(); i++) {
                 Trip currentTrip = trips[i];
                 file << currentTrip.getDepartureLocation() << "," << currentTrip.getDestinationLocation() << "," << currentTrip.getHandle() << "," 
                 << currentTrip.getDate() << "," << currentTrip.getPrice() << "\n";
             }
             file.close();
+            
 
+            // If it got here, means that everything went well and the trip was succesfully deleted
             std::cout << "Trip removed successfully.\n";
 
         } catch (const std::exception& e) {

@@ -16,6 +16,8 @@ int main() {
     AdminOrUser loggedInUser;
     int choice = 0;
 
+
+    // 3 main choices, 1=log-in, 2=sign-up, 3=quit
     while (choice != 3) {
         std::cout << "-----------------------\n";
         std::cout << "1. Log In\n";
@@ -24,7 +26,7 @@ int main() {
         std::cout << "Enter your choice: ";
         
         try {
-            // if the input is not a number 1-3
+            // Throw an error if the input is a anything else except 1,2,3
             std::cin >> choice;
             if (std::cin.fail()) {
                 std::cin.clear();
@@ -33,13 +35,16 @@ int main() {
             }
 
 
-            // login section
+            // If the selected option is log-in
             if (choice == 1) {
+                
+                // Calls the function to login the user and display the message if succesful
                 loggedInUser = authManager.loginUser();
                 std::cout << "Logged in succesfuly\n";
 
 
-                // if the user is anyone except the admin
+                // If the user if anyone except the admin
+                // there can only be ONE admin, and noone is allowed to have admin as their username
                 if (loggedInUser.getUsername() != "admin") {
                     // "promote" the logged in user to normal User
                     User user(loggedInUser.getUsername(), loggedInUser.getPassword());
@@ -47,6 +52,8 @@ int main() {
 
                     while (true) {
                         try {
+
+                            // Display all of the user's options
                             std::cout << "\n-----------------------\n";
                             int userChoice;
                             std::cout << "1. Display all trips\n";
@@ -56,16 +63,17 @@ int main() {
                             std::cin >> userChoice;
 
 
-                            if (userChoice == 1) {
+                            if (userChoice == 1) { // Displays all available trips
                                 user.displayAllTrips(trips);
-                            } if (userChoice == 2) {
+                            } else if (userChoice == 2) { // Searches and if need be book a trip
                                 user.searchAndBookTrip(trips);
-                            }  else if (userChoice == 3) {
+                            }  else if (userChoice == 3) { // Exit
                                 std::cout << "\n-----------------------\n";
                                 std::cout << "Exiting program...\n";
                                 return 0;
                             } else {
-                                throw std::invalid_argument("Invalid choice. Please enter a number 1-2");
+                                // Throw an error if the inputted option is not a valid one
+                                throw std::invalid_argument("Invalid choice. Please enter a number 1-3");
                             }
                         } catch (const std::exception& e) {
                             std::cout << "Error: " << e.what() << std::endl;
@@ -79,11 +87,14 @@ int main() {
 
                 // if the user is the admin
                 if (loggedInUser.getUsername() == "admin") {
+                    // "promote" the loggedInUser to be Admin
                     Admin admin(loggedInUser.getUsername(), loggedInUser.getPassword());
 
 
                     while (true) {
                         try {
+
+                            // Display all of the admins options
                             std::cout << "\n-----------------------\n";
                             int adminChoice;
                             std::cout << "1. Display all trips\n";
@@ -94,17 +105,18 @@ int main() {
                             std::cin >> adminChoice;
 
 
-                            if (adminChoice == 1) {
+                            if (adminChoice == 1) { // Also has the ability to view all available trip
                                 admin.displayAllTrips(trips);
-                            } else if (adminChoice == 2) {
+                            } else if (adminChoice == 2) { // He can also add a trips 
                                 admin.addTrip(trips);
-                            } else if (adminChoice == 3) {
+                            } else if (adminChoice == 3) { // Or delete one
                                 admin.deleteTrip(trips);
-                            } else if (adminChoice == 4) {
+                            } else if (adminChoice == 4) { // Exit
                                 std::cout << "\n-----------------------\n";
                                 std::cout << "Exiting program...\n";
                                 return 0;
                             } else {
+                                // Throw an error if the inputted option is not a valid one
                                 throw std::invalid_argument("Invalid choice. Please enter a number 1-3");
                             }
                         } catch(const std::exception& e) {
@@ -128,7 +140,7 @@ int main() {
                 // prompt the user to input the username and password for his account
                 std::string username, password;
                 std::cout << "Create new account:\n";
-                std::cout << "Username: ";
+                std::cout << "Email: ";
                 std::cin >> username;
                 std::cout << "Password: ";
                 std::cin >> password;
@@ -140,7 +152,6 @@ int main() {
                 User newUser(username, password);
                 newUser.addUserToCSV();
 
-                return 0;
             } 
             
             

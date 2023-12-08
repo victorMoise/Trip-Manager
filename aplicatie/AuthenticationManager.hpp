@@ -11,6 +11,8 @@ private:
     RSA rsa;
     std::vector<AdminOrUser> users; // Assuming users data is loaded into this vector
 
+
+    // Verifies the users credentials and if they exist in the datebase
     AdminOrUser* verifyCredentials(const std::string& username, const std::string& inputPassword) {
         std::string encryptedInputPassword = rsa.encrypt(inputPassword);
 
@@ -19,9 +21,12 @@ private:
                 return &users[i]; // Return a pointer to the User object
             }
         }
+
         return nullptr; // No matching credentials found
     }
 
+
+    // Loads all available users from the datebase, stores them in the Object's vector
     void loadUserDataFromFile() {
         try {
             std::ifstream file("./storage/credentials.csv");
@@ -48,22 +53,27 @@ private:
     }
 
 public:
+    // Constrcutor initializes the rsa class and loads the users from the .csv
     AuthenticationManager() : rsa(61, 53) {
-        // Load user data from file into the users vector or any other data structure
         loadUserDataFromFile();
     }
 
+
+    // Main function that promps the user to input a username and a password
+    // until they are found in the database
     AdminOrUser loginUser() {
         std::string inputUsername;
         std::string inputPassword;
 
         while (true) {
+            loadUserDataFromFile();
             std::cout << "\n-----------------------\n";
-            std::cout << "Enter username: ";
+            std::cout << "Enter username (your email): ";
             std::cin >> inputUsername;
             std::cout << "Enter password: ";
             std::cin >> inputPassword;
 
+            
             try {
                 AdminOrUser* user = verifyCredentials(inputUsername, inputPassword);
                 if (user != nullptr) {

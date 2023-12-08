@@ -6,10 +6,29 @@ private:
     std::vector<Trip> reservations;
 
 
+    // Password must be at least 8 characters long
+    bool isStrongPassword(const std::string& password) {
+        return (password.length() >= 8);
+    }
+
+
 public:
+    // Constructor
     User(std::string username, std::string password) : AdminOrUser(username, password) {}
 
 
+    // Check if a username (string) has @gmail.com at the end
+    bool isValidEmail(const std::string& email) {
+        size_t atIndex = email.find('@');
+        size_t dotIndex = email.find('.', atIndex);
+
+        return (atIndex != std::string::npos &&
+                dotIndex != std::string::npos &&
+                dotIndex > atIndex);
+    }
+
+
+    // This is the function that takes care of adding/signing-up users 
     void addUserToCSV() {
         try {
             std::ifstream readFile("./storage/credentials.csv"); // Open file to read existing usernames
@@ -25,29 +44,49 @@ public:
                 existingUsernames.push_back(username);
             }
 
+            // Close the credentials file
             readFile.close();
 
+            // Open the credentials file in append mode
             std::ofstream file("./storage/credentials.csv", std::ios::app); // Open file in append mode
 
+
+            // Throw an error if the file was unable to be opened
             if (!file.is_open()) {
-                throw std::runtime_error("Error: Unable to open file.");
+                throw std::runtime_error("Error: Unable to open file.\n");
             }
+
+
+            // Throw an error if the email does not end in @gmail.com 
+            if (!isValidEmail(username)) {
+                throw std::runtime_error("Error: username must end in @gmail.com\n");
+            }
+
+
+            // Throw an error if the password is not at least 8 characters long
+            if (!isStrongPassword(password)) {
+                throw std::runtime_error("Error: Password must be at least 8 characters long.\n");
+            }
+
 
             // Creating another user with the name admin is not allowed
             if (username == "admin") {
-                throw std::runtime_error("Error: Cannot create user with name admin.");
+                throw std::runtime_error("Error: Cannot create user with name admin.\n");
             }
 
             // Check if the username already exists
             if (std::find(existingUsernames.begin(), existingUsernames.end(), getUsername()) != existingUsernames.end()) {
-                throw std::runtime_error("Error: User already exists!");
+                throw std::runtime_error("Error: User already exists!\n");
             }
 
 
+            // Add the new user in the .csv and displat the succed message
             file << getUsername() << "," << rsa.encrypt(getPassword()) << "\n"; // Include newline
             file.close();
-            std::cout << "User succesfuly created.\n";
+            std::cout << "User succesfuly created.\n\n";
+
         } catch (const std::exception& e) {
+            // Catch any of the above errors
             std::cout << e.what() << std::endl;
         }
     }
@@ -56,6 +95,8 @@ public:
 
     void searchAndBookTrip(std::vector<Trip>& trips) {
         try {
+
+            // Input needed to search for a trip
             std::string to, from, date;
             std::cout << "\n-----------------------\n";
             std::cout << "Enter trip details:\n";
@@ -67,7 +108,7 @@ public:
             std::cin >> date;
 
 
-            // make sure to and from are in the correct format
+            // Make sure to and from are in the correct format (capitalized)
             to = capitalizeString(to);
             from = capitalizeString(from);
 
@@ -82,11 +123,16 @@ public:
                 throw std::runtime_error("Date is in the past.");
             }
 
-
+            
+            // Keeps track if the desired trip is found
             bool found = false;
 
+
+            // Loop through all trips
             for (int i = 0; i < trips.size(); i++) {
                 Trip trip = trips[i];
+
+                // Check if any match the user's input, if yes display it's details
                 if (trip.getDepartureLocation() == from && trip.getDestinationLocation() == to && trip.getDate() == date) {
                     found = true;
                     std::cout << "\n-----------------------\n";
@@ -96,18 +142,24 @@ public:
                     std::cout << std::fixed << std::setprecision(2) << ", Price: $" << trip.getPrice() << "\n";
 
 
-                    // if a trip is found, give the user the posibility to book it
+                    // After a trip is found, the user has the possibilty to book the trip 
+
+
                     std::string bookTrip;
                     bool validInput = false;
 
                     while (!validInput) {
                         try {
+
+                            // Display the prompt to check wheter or not he wants to book it
                             std::cout << "\n-----------------------\n";
                             std::cout << "Do you want to book " << trip.getHandle() << " on " << trip.getDate() <<  "? (Y/N)\n";
                             std::cout << "Enter your choice: ";
                             std::cin >> bookTrip;
                             bookTrip = capitalizeString(bookTrip);
 
+
+                            // Anything else of Y/N throws an error
                             if (bookTrip != "Y" && bookTrip != "N") {
                                 throw std::invalid_argument("Invalid input. Please enter Y or N.");
                             }
@@ -128,19 +180,19 @@ public:
                         }
                     }
 
-                    break;
+                    break; // No need to continue, user already found/booked trip
                 }
             }
-
+            
+            // In case no trips were found that matched the user's needs
             if (!found) {
                 std::cout << "\n-----------------------\n";
                 std::cout << "No trips found.\n";
             }
+
         } catch (const std::exception& e) {
+            // Catches all exceptions
             std::cout << "Error: " << e.what() << std::endl;
         }
     }
-
-
-    
 };

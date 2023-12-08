@@ -48,6 +48,8 @@ public:
         }
     }
 
+
+    // Encrypts a string using an "improvised RSA algorithm"
     std::string encrypt(const std::string& plaintext) {
         std::stringstream encryptedText;
 
@@ -67,6 +69,8 @@ public:
         return encryptedString;
     }
 
+
+    // Decrypts a string ecrypted with RSA
     std::string decrypt(const std::string& ciphertext) {
         std::stringstream ss(ciphertext);
         std::string decryptedText;

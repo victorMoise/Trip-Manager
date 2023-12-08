@@ -9,6 +9,9 @@ private:
     std::vector<Trip> trips;
     
 public:
+
+    // Loads all of the availbe trips from the .csvinto a vector, 
+    // which can be returned using the getter if needed
     void loadTripsFromCSV(const std::string& filename) {
         try {
             std::ifstream file(filename);
@@ -41,14 +44,7 @@ public:
     }
 
 
-    void printTrips() const {
-        for (size_t i = 0; i < trips.size(); ++i) {
-            Trip trip = trips[i];
-            std::cout << trip.getAllInfo();
-        }
-    }
-
-
+    // returns the trips vector
     std::vector<Trip> getTrips() {
         return trips;
     }

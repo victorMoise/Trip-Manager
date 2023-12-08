@@ -50,24 +50,6 @@ public:
     float getPrice() const {
         return this->price;
     }
-
-    void setDepartureLocation(std::string newDeparture) {
-        this->departure = newDeparture;
-        this->handle = createHandle();
-    }
-
-    void setDestinationLocation(std::string newDestination) {
-        this->destination = newDestination;
-        this->handle = createHandle();
-    }
-
-    void setDate(std::string newDate) {
-        this->date = newDate;
-    }
-
-    void setPrice(float newPrice) {
-        this->price = newPrice;
-    }
 };
 
 

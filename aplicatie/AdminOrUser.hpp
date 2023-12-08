@@ -34,6 +34,8 @@ protected:
     }
 
 
+
+    // Gets current date and returns it a string
     std::string getCurrentDate() {
         std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
         std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
@@ -49,6 +51,7 @@ protected:
     }
 
 
+    // Checks wheter or not a given date is in the past, if is returns false
     bool isDateNotInPast(const std::string& date) {
         std::tm timeInfo = {}; // Initialize with zeros to avoid potential issues
 
@@ -85,7 +88,7 @@ public:
     std::string getUsername() const { return username; }
     std::string getPassword() const { return password; }
 
-    // Other User functionalities
+    // Display all available trips
     void displayAllTrips(std::vector<Trip> trips) {
         std::cout << "\n-----------------------\n";
         std::cout << "List of all available trips:\n";
